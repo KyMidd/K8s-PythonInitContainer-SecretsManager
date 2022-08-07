@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secrets-testing
+  namespace: init
+  labels:
+    app: secrets-testing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: secrets-testing
+  template:
+    metadata:
+      name: secrets-testing
+      labels:
+        app: secrets-testing
+    spec:      
+      volumes:
+      - name: init-secrets
+        emptyDir: {}
+      
+      serviceAccountName: init-secret-fetcher
+      
+      initContainers:
+        - name: init-secret-fetcher
+          image: kymidd/secrets-testing-fetcher01:v0.0.3
+          volumeMounts:
+          - name: init-secrets
+            mountPath: /tmp/init-secrets
+          command: 
+            - python3
+            - ./start.py
+          args:
+            - 'arn:aws:secretsmanager:us-west-2:1234567890:secret:app1'
+      
+      containers:
+        - name: secrets-testing-app01
+          image: kymidd/secrets-testing-app01:v0.0.3
+
+          volumeMounts:
+          - name: init-secrets
+            mountPath: "/tmp/init-secrets"
+
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+
+          command: ["/bin/bash", "-c"]
+          args:
+            - "./start.sh -a $(cat /tmp/init-secrets/app1-super-secret-json) -b $(cat /tmp/init-secrets/app1-super-secret-string)"
