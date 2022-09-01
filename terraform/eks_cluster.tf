@@ -14,7 +14,7 @@ resource "aws_eks_cluster" "aws_eks_cluster" {
   vpc_config {
     subnet_ids = [
       "subnet-111", #Public Subnet 1 ID
-      "subnet-222" #Public Subnet 2 ID
+      "subnet-222"  #Public Subnet 2 ID
     ]
   }
   timeouts {

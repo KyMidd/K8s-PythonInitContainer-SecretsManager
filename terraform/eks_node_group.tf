@@ -33,8 +33,8 @@ resource "aws_eks_node_group" "eks-node-group" {
   node_group_name = "eks-node-group"
   node_role_arn   = aws_iam_role.eks_node_role.arn
   subnet_ids = [
-      "subnet-111", #Private Subnet 1 ID
-      "subnet-222" #Private Subnet 2 ID
+    "subnet-111", #Private Subnet 1 ID
+    "subnet-222"  #Private Subnet 2 ID
   ]
 
   scaling_config {
